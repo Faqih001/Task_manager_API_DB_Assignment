@@ -17,33 +17,45 @@ The database consists of four tables:
 
 ### Entity Relationship Diagram (ERD)
 
-\`\`\`
-+----------------+       +----------------+       +----------------+
-|     users      |       |     tasks      |       |   categories   |
-+----------------+       +----------------+       +----------------+
-| id (PK)        |       | id (PK)        |       | id (PK)        |
-| username       |       | title          |       | name           |
-| email          |       | description    |       | description    |
-| password_hash  |       | status         |       | created_at     |
-| created_at     |       | priority       |       | updated_at     |
-| updated_at     |       | due_date       |       +----------------+
-+----------------+       | category_id(FK)|
-        |                | created_by (FK)|
-        |                | created_at     |
-        |                | updated_at     |
-        |                +----------------+
-        |                        |
-        |                        |
-        v                        v
-+-------------------------------+
-|     task_assignments          |
-+-------------------------------+
-| id (PK)                       |
-| task_id (FK)                  |
-| user_id (FK)                  |
+```plaintext
++------------------+       +-------------------+       +------------------+
+|     users        |       |     tasks         |       |   categories     |
++------------------+       +-------------------+       +------------------+
+| id (PK)          |       | id (PK)           |       | id (PK)          |
+| username         |       | title             |       | name             |
+| email            |       | description       |       | description      |
+| password_hash    |       | status            |       | created_at       |
+| created_at       |       | priority          |       | updated_at       |
+| updated_at       |       | due_date          |       +------------------+
++------------------+       | category_id (FK)  |
+        ^                  | created_by (FK)   |
+        |                  | created_at        |
+        |                  | updated_at        |
+        |                  +-------------------+
+        |                          ^
+        |                          |
+        |                          |
++-------------------------------+  |
+|     task_assignments          |  |
++-------------------------------+  |
+| id (PK)                       |  |
+| task_id (FK) -------------------|
+| user_id (FK) ------------------+
 | assigned_at                   |
 +-------------------------------+
-\`\`\`
+```
+
+#### Key Relationships
+
+- One user can create many tasks (one-to-many)
+- One category can have many tasks (one-to-many)
+- Many users can be assigned to many tasks (many-to-many through task_assignments)
+
+#### Constraints
+
+- If a category is deleted, the category_id in tasks is set to NULL
+- If a user is deleted, all their created tasks are deleted (CASCADE)
+- If a task or user is deleted, all related task assignments are deleted (CASCADE)
 
 ## Setup Instructions
 
@@ -55,34 +67,39 @@ The database consists of four tables:
 ### Installation
 
 1. Clone the repository:
-   \`\`\`
+
+   ```bash
    git clone https://github.com/yourusername/task-manager-api.git
    cd task-manager-api
-   \`\`\`
+   ```
 
 2. Install dependencies:
-   \`\`\`
+
+   ```bash
    npm install
-   \`\`\`
+   ```
 
 3. Set up the database:
-   \`\`\`
+
+   ```bash
    mysql -u root -ptest < schema.sql
-   \`\`\`
+   ```
 
 4. Create a `.env` file in the root directory with the following content:
-   \`\`\`
+
+   ```env
    PORT=3000
    DB_HOST=localhost
    DB_USER=root
    DB_PASSWORD=test
    DB_NAME=task_manager
-   \`\`\`
+   ```
 
 5. Start the server:
-   \`\`\`
+
+   ```
    npm start
-   \`\`\`
+   ```
 
 ## API Endpoints
 
@@ -119,6 +136,66 @@ The database consists of four tables:
 - `GET /api/assignments/user/:userId` - Get assignments by user ID
 - `POST /api/assignments` - Create a new assignment
 - `DELETE /api/assignments/:taskId/:userId` - Delete an assignment
+
+## Running the Project
+
+After making updates, follow these steps to run the complete project:
+
+### 1. Set up the Database
+
+If you haven't already set up the database, run this command:
+
+```bash
+mysql -u root -p < schema.sql
+```
+
+Enter your MySQL password when prompted. This will create the database and necessary tables.
+
+### 2. Start the API Server
+
+Navigate to the project directory and start the Express API server:
+
+```bash
+# Navigate to project directory
+cd /path/to/Task_manager_API_DB_Assignment
+
+# Start the API server
+npm run api
+```
+
+The API server will run on <http://localhost:3000/api>.
+
+### 3. Start the Next.js Frontend
+
+In a separate terminal, start the Next.js frontend:
+
+```bash
+# Navigate to project directory
+cd /path/to/Task_manager_API_DB_Assignment
+
+# Start the Next.js development server
+npm run dev
+```
+
+The frontend will run on <http://localhost:3000> by default.
+
+### 4. Access the Application
+
+Open your browser and navigate to <http://localhost:3000> to access the Task Manager UI. From here you can:
+
+- Manage users (create, view, edit, delete)
+- Manage tasks (create, view, edit, delete)
+- Manage categories (create, view, edit, delete)
+- Manage task assignments (assign tasks to users, view assignments, delete assignments)
+
+### Troubleshooting
+
+If you encounter any issues:
+
+1. **Database Connection Issues**: Verify your database credentials in the `.env` file
+2. **Port Conflicts**: If port 3000 is already in use, you can modify the PORT in your `.env` file
+3. **API Errors**: Check the terminal running your API server for error logs
+4. **UI Not Showing Updates**: If the UI doesn't reflect database changes, refresh the page or check network requests for errors
 
 ## Technologies Used
 
