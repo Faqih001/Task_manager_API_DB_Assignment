@@ -126,7 +126,7 @@ CREATE TABLE loans (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (copy_id) REFERENCES book_copies(copy_id) ON DELETE RESTRICT,
     FOREIGN KEY (member_id) REFERENCES members(member_id) ON DELETE RESTRICT,
-    CONSTRAINT chk_dates CHECK (return_date IS NULL OR return_date >= checkout_date),
+    CONSTRAINT chk_loan_dates CHECK (return_date IS NULL OR return_date >= checkout_date),
     CONSTRAINT chk_renewed_count CHECK (renewed_count >= 0 AND renewed_count <= 3)
 );
 
