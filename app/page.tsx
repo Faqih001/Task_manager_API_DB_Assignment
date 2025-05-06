@@ -1,12 +1,47 @@
 "use client"
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, ChangeEvent, FormEvent } from 'react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Label } from "@/components/ui/label"
+
+// Define interfaces for data types
+interface User {
+  id: number;
+  username: string;
+  email: string;
+  password?: string;
+  created_at: string;
+}
+
+interface Task {
+  id: number;
+  title: string;
+  description?: string;
+  status: string;
+  priority: string;
+  due_date?: string;
+  category_id?: number;
+  created_by: number;
+  created_at: string;
+}
+
+interface Category {
+  id: number;
+  name: string;
+  description?: string;
+  created_at: string;
+}
+
+interface Assignment {
+  id: number;
+  task_id: number;
+  user_id: number;
+  assigned_at: string;
+}
 
 export default function TaskManagerUI() {
   return (
@@ -43,15 +78,20 @@ export default function TaskManagerUI() {
 
 // Users Tab Component
 function UsersTab() {
-  const [users, setUsers] = useState([])
-  const [loading, setLoading] = useState(true)
-  const [formData, setFormData] = useState({
+  const [users, setUsers] = useState<User[]>([])
+  const [loading, setLoading] = useState<boolean>(true)
+  const [formData, setFormData] = useState<{
+    id: string | number;
+    username: string;
+    email: string;
+    password: string;
+  }>({
     id: '',
     username: '',
     email: '',
     password: ''
   })
-  const [isEditing, setIsEditing] = useState(false)
+  const [isEditing, setIsEditing] = useState<boolean>(false)
 
   // Fetch all users
   useEffect(() => {
@@ -72,7 +112,7 @@ function UsersTab() {
   }
 
   // Handle form input changes
-  const handleChange = (e) => {
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value
@@ -80,7 +120,7 @@ function UsersTab() {
   }
 
   // Create a new user
-  const createUser = async (e) => {
+  const createUser = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     try {
       const response = await fetch('http://localhost:3000/api/users', {
@@ -103,7 +143,7 @@ function UsersTab() {
   }
 
   // Set form data for editing
-  const editUser = (user) => {
+  const editUser = (user: User) => {
     setFormData({
       id: user.id,
       username: user.username,
@@ -114,7 +154,7 @@ function UsersTab() {
   }
 
   // Update an existing user
-  const updateUser = async (e) => {
+  const updateUser = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     try {
       const response = await fetch(`http://localhost:3000/api/users/${formData.id}`, {
@@ -138,7 +178,7 @@ function UsersTab() {
   }
 
   // Delete a user
-  const deleteUser = async (id) => {
+  const deleteUser = async (id: number) => {
     if (confirm('Are you sure you want to delete this user?')) {
       try {
         const response = await fetch(`http://localhost:3000/api/users/${id}`, {
@@ -278,11 +318,20 @@ function UsersTab() {
 
 // Tasks Tab Component
 function TasksTab() {
-  const [tasks, setTasks] = useState([])
-  const [categories, setCategories] = useState([])
-  const [users, setUsers] = useState([])
-  const [loading, setLoading] = useState(true)
-  const [formData, setFormData] = useState({
+  const [tasks, setTasks] = useState<Task[]>([])
+  const [categories, setCategories] = useState<Category[]>([])
+  const [users, setUsers] = useState<User[]>([])
+  const [loading, setLoading] = useState<boolean>(true)
+  const [formData, setFormData] = useState<{
+    id: string | number;
+    title: string;
+    description: string;
+    status: string;
+    priority: string;
+    due_date: string;
+    category_id: string;
+    created_by: string;
+  }>({
     id: '',
     title: '',
     description: '',
@@ -292,7 +341,7 @@ function TasksTab() {
     category_id: '',
     created_by: ''
   })
-  const [isEditing, setIsEditing] = useState(false)
+  const [isEditing, setIsEditing] = useState<boolean>(false)
 
   // Fetch data on component mount
   useEffect(() => {
@@ -335,7 +384,7 @@ function TasksTab() {
   }
 
   // Handle form input changes
-  const handleChange = (e) => {
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
     setFormData({
       ...formData,
@@ -343,7 +392,7 @@ function TasksTab() {
     })
   }
 
-  const handleSelectChange = (name, value) => {
+  const handleSelectChange = (name: string, value: string) => {
     setFormData({
       ...formData,
       [name]: value
@@ -351,7 +400,7 @@ function TasksTab() {
   }
 
   // Create a new task
-  const createTask = async (e) => {
+  const createTask = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     try {
       const response = await fetch('http://localhost:3000/api/tasks', {
@@ -387,7 +436,7 @@ function TasksTab() {
   }
 
   // Set form data for editing
-  const editTask = (task) => {
+  const editTask = (task: Task) => {
     setFormData({
       id: task.id,
       title: task.title,
@@ -402,7 +451,7 @@ function TasksTab() {
   }
 
   // Update an existing task
-  const updateTask = async (e) => {
+  const updateTask = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     try {
       const response = await fetch(`http://localhost:3000/api/tasks/${formData.id}`, {
@@ -438,7 +487,7 @@ function TasksTab() {
   }
 
   // Delete a task
-  const deleteTask = async (id) => {
+  const deleteTask = async (id: number) => {
     if (confirm('Are you sure you want to delete this task?')) {
       try {
         const response = await fetch(`http://localhost:3000/api/tasks/${id}`, {
@@ -662,14 +711,18 @@ function TasksTab() {
 
 // Categories Tab Component
 function CategoriesTab() {
-  const [categories, setCategories] = useState([])
-  const [loading, setLoading] = useState(true)
-  const [formData, setFormData] = useState({
+  const [categories, setCategories] = useState<Category[]>([])
+  const [loading, setLoading] = useState<boolean>(true)
+  const [formData, setFormData] = useState<{
+    id: string | number;
+    name: string;
+    description: string;
+  }>({
     id: '',
     name: '',
     description: ''
   })
-  const [isEditing, setIsEditing] = useState(false)
+  const [isEditing, setIsEditing] = useState<boolean>(false)
 
   // Fetch all categories
   useEffect(() => {
@@ -690,7 +743,7 @@ function CategoriesTab() {
   }
 
   // Handle form input changes
-  const handleChange = (e) => {
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value
@@ -698,7 +751,7 @@ function CategoriesTab() {
   }
 
   // Create a new category
-  const createCategory = async (e) => {
+  const createCategory = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     try {
       const response = await fetch('http://localhost:3000/api/categories', {
@@ -720,7 +773,7 @@ function CategoriesTab() {
   }
 
   // Set form data for editing
-  const editCategory = (category) => {
+  const editCategory = (category: Category) => {
     setFormData({
       id: category.id,
       name: category.name,
@@ -730,7 +783,7 @@ function CategoriesTab() {
   }
 
   // Update an existing category
-  const updateCategory = async (e) => {
+  const updateCategory = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     try {
       const response = await fetch(`http://localhost:3000/api/categories/${formData.id}`, {
@@ -753,7 +806,7 @@ function CategoriesTab() {
   }
 
   // Delete a category
-  const deleteCategory = async (id) => {
+  const deleteCategory = async (id: number) => {
     if (confirm('Are you sure you want to delete this category?')) {
       try {
         const response = await fetch(`http://localhost:3000/api/categories/${id}`, {
@@ -877,11 +930,14 @@ function CategoriesTab() {
 
 // Assignments Tab Component
 function AssignmentsTab() {
-  const [assignments, setAssignments] = useState([])
-  const [tasks, setTasks] = useState([])
-  const [users, setUsers] = useState([])
-  const [loading, setLoading] = useState(true)
-  const [formData, setFormData] = useState({
+  const [assignments, setAssignments] = useState<Assignment[]>([])
+  const [tasks, setTasks] = useState<Task[]>([])
+  const [users, setUsers] = useState<User[]>([])
+  const [loading, setLoading] = useState<boolean>(true)
+  const [formData, setFormData] = useState<{
+    task_id: string;
+    user_id: string;
+  }>({
     task_id: '',
     user_id: ''
   })
@@ -927,7 +983,7 @@ function AssignmentsTab() {
   }
 
   // Handle select change
-  const handleSelectChange = (name, value) => {
+  const handleSelectChange = (name: string, value: string) => {
     setFormData({
       ...formData,
       [name]: value
@@ -935,7 +991,7 @@ function AssignmentsTab() {
   }
 
   // Create a new assignment
-  const createAssignment = async (e) => {
+  const createAssignment = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     try {
       const response = await fetch('http://localhost:3000/api/assignments', {
@@ -957,7 +1013,7 @@ function AssignmentsTab() {
   }
 
   // Delete an assignment
-  const deleteAssignment = async (id) => {
+  const deleteAssignment = async (id: number) => {
     if (confirm('Are you sure you want to delete this assignment?')) {
       try {
         const response = await fetch(`http://localhost:3000/api/assignments/${id}`, {
