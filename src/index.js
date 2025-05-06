@@ -5,6 +5,12 @@ import userRoutes from "./routes/userRoutes.js"
 import taskRoutes from "./routes/taskRoutes.js"
 import categoryRoutes from "./routes/categoryRoutes.js"
 import assignmentRoutes from "./routes/assignmentRoutes.js"
+import path from "path"
+import { fileURLToPath } from "url"
+
+// Get current file's directory
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
 
 // Load environment variables
 dotenv.config()
@@ -16,14 +22,17 @@ const PORT = process.env.PORT || 3000
 app.use(cors())
 app.use(express.json())
 
+// Serve static files from public directory
+app.use(express.static(path.join(__dirname, "../public")))
+
 // Routes
 app.use("/api/users", userRoutes)
 app.use("/api/tasks", taskRoutes)
 app.use("/api/categories", categoryRoutes)
 app.use("/api/assignments", assignmentRoutes)
 
-// Root route
-app.get("/", (req, res) => {
+// Root API route
+app.get("/api", (req, res) => {
   res.json({
     message: "Welcome to the Task Manager API",
     endpoints: {
@@ -33,6 +42,11 @@ app.get("/", (req, res) => {
       assignments: "/api/assignments",
     },
   })
+})
+
+// Root route serves the HTML UI
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "../public/index.html"))
 })
 
 // Start server
