@@ -1005,7 +1005,7 @@ function AssignmentsTab() {
       
       if (response.ok) {
         setFormData({ task_id: '', user_id: '' })
-        fetchAssignments()
+        window.location.reload() // Reload page after successful operation
       }
     } catch (error) {
       console.error('Error creating assignment:', error)
@@ -1021,7 +1021,7 @@ function AssignmentsTab() {
         })
         
         if (response.ok) {
-          fetchAssignments()
+          window.location.reload() // Reload page after successful operation
         }
       } catch (error) {
         console.error('Error deleting assignment:', error)
