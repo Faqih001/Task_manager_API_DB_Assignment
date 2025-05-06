@@ -17,45 +17,69 @@ The database consists of four tables:
 
 ### Entity Relationship Diagram (ERD)
 
-```plaintext
-+------------------+       +-------------------+       +------------------+
-|     users        |       |     tasks         |       |   categories     |
-+------------------+       +-------------------+       +------------------+
-| id (PK)          |       | id (PK)           |       | id (PK)          |
-| username         |       | title             |       | name             |
-| email            |       | description       |       | description      |
-| password_hash    |       | status            |       | created_at       |
-| created_at       |       | priority          |       | updated_at       |
-| updated_at       |       | due_date          |       +------------------+
-+------------------+       | category_id (FK)  |
-        ^                  | created_by (FK)   |
-        |                  | created_at        |
-        |                  | updated_at        |
-        |                  +-------------------+
-        |                          ^
-        |                          |
-        |                          |
-+-------------------------------+  |
-|     task_assignments          |  |
-+-------------------------------+  |
-| id (PK)                       |  |
-| task_id (FK) -------------------|
+```
++------------------+                     +-------------------+                    +------------------+
+|      users       |                     |       tasks       |                    |    categories    |
++------------------+                     +-------------------+                    +------------------+
+| id (PK)          |                     | id (PK)           |                    | id (PK)          |
+| username         |                     | title             |                    | name             |
+| email            |                     | description       |                    | description      |
+| password_hash    |                     | status            |                    | created_at       |
+| created_at       |                     | priority          |                    | updated_at       |
+| updated_at       |                     | due_date          |                    +------------------+
++------------------+                     | category_id (FK) -|------------------->|
+        ^                                | created_by (FK) --|------------------->|
+        |                                | created_at        |
+        |                                | updated_at        |
+        |                                +-------------------+
+        |                                         ^
+        |                                         |
+        |                                         |
++-------------------------------+                 |
+|     task_assignments          |                 |
++-------------------------------+                 |
+| id (PK)                       |                 |
+| task_id (FK) ----------------------------------->
 | user_id (FK) ------------------+
 | assigned_at                   |
 +-------------------------------+
 ```
 
-#### Key Relationships
+### Detailed Relationship Explanations
 
-- One user can create many tasks (one-to-many)
-- One category can have many tasks (one-to-many)
-- Many users can be assigned to many tasks (many-to-many through task_assignments)
+#### 1. Users and Tasks Relationship (One-to-Many)
 
-#### Constraints
+- **Type**: One-to-Many
+- **Implementation**: Foreign key `created_by` in the tasks table references `id` in the users table
+- **Meaning**: Each user can create multiple tasks, but each task is created by exactly one user
+- **Constraint**: ON DELETE CASCADE - When a user is deleted, all tasks created by that user are also deleted
+- **Business Logic**: This relationship tracks task ownership and accountability
 
-- If a category is deleted, the category_id in tasks is set to NULL
-- If a user is deleted, all their created tasks are deleted (CASCADE)
-- If a task or user is deleted, all related task assignments are deleted (CASCADE)
+#### 2. Categories and Tasks Relationship (One-to-Many)
+
+- **Type**: One-to-Many
+- **Implementation**: Foreign key `category_id` in the tasks table references `id` in the categories table
+- **Meaning**: Each category can be associated with multiple tasks, but each task belongs to at most one category
+- **Constraint**: ON DELETE SET NULL - When a category is deleted, the category_id in associated tasks is set to NULL
+- **Business Logic**: This allows for organizational grouping of related tasks
+
+#### 3. Users and Tasks Assignment Relationship (Many-to-Many)
+
+- **Type**: Many-to-Many
+- **Implementation**: Junction table `task_assignments` with foreign keys to both users and tasks
+- **Meaning**: Each user can be assigned to multiple tasks, and each task can be assigned to multiple users
+- **Constraints**:
+  - ON DELETE CASCADE for both relationships - When either a user or task is deleted, all related assignments are also deleted
+  - UNIQUE constraint on the combination of task_id and user_id to prevent duplicate assignments
+- **Business Logic**: This enables task delegation and team collaboration
+
+#### 4. Database Integrity and Constraints
+
+- **Unique Constraints**: Username and email must be unique in the users table; category names must be unique
+- **Enumerated Types**: Task status is limited to 'pending', 'in_progress', 'completed', or 'cancelled'
+- **Enumerated Types**: Task priority is limited to 'low', 'medium', or 'high'
+- **Timestamps**: All tables include created_at timestamps; tables with updatable content include updated_at timestamps that automatically update
+- **Cascading Actions**: The schema implements appropriate cascading actions to maintain referential integrity
 
 ## Setup Instructions
 
