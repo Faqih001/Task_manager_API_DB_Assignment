@@ -135,7 +135,7 @@ function UsersTab() {
       
       if (response.ok) {
         setFormData({ id: '', username: '', email: '', password: '' })
-        fetchUsers()
+        window.location.reload() // Reload page after successful operation
       }
     } catch (error) {
       console.error('Error creating user:', error)
@@ -170,7 +170,7 @@ function UsersTab() {
       if (response.ok) {
         setFormData({ id: '', username: '', email: '', password: '' })
         setIsEditing(false)
-        fetchUsers()
+        window.location.reload() // Reload page after successful operation
       }
     } catch (error) {
       console.error('Error updating user:', error)
@@ -186,7 +186,7 @@ function UsersTab() {
         })
         
         if (response.ok) {
-          fetchUsers()
+          window.location.reload() // Reload page after successful operation
         }
       } catch (error) {
         console.error('Error deleting user:', error)
@@ -428,7 +428,7 @@ function TasksTab() {
           category_id: '',
           created_by: ''
         })
-        fetchTasks()
+        window.location.reload() // Reload page after successful operation
       }
     } catch (error) {
       console.error('Error creating task:', error)
@@ -479,7 +479,7 @@ function TasksTab() {
           created_by: ''
         })
         setIsEditing(false)
-        fetchTasks()
+        window.location.reload() // Reload page after successful operation
       }
     } catch (error) {
       console.error('Error updating task:', error)
@@ -495,7 +495,7 @@ function TasksTab() {
         })
         
         if (response.ok) {
-          fetchTasks()
+          window.location.reload() // Reload page after successful operation
         }
       } catch (error) {
         console.error('Error deleting task:', error)
@@ -765,7 +765,7 @@ function CategoriesTab() {
       
       if (response.ok) {
         setFormData({ id: '', name: '', description: '' })
-        fetchCategories()
+        window.location.reload() // Reload page after successful operation
       }
     } catch (error) {
       console.error('Error creating category:', error)
@@ -798,7 +798,7 @@ function CategoriesTab() {
       if (response.ok) {
         setFormData({ id: '', name: '', description: '' })
         setIsEditing(false)
-        fetchCategories()
+        window.location.reload() // Reload page after successful operation
       }
     } catch (error) {
       console.error('Error updating category:', error)
@@ -814,7 +814,7 @@ function CategoriesTab() {
         })
         
         if (response.ok) {
-          fetchCategories()
+          window.location.reload() // Reload page after successful operation
         }
       } catch (error) {
         console.error('Error deleting category:', error)
